@@ -1,0 +1,33 @@
+sources:
+  pokeapi:
+    type: api
+    base_url: "https://pokeapi.co"
+    endpoints:
+      pokemon:
+        method: "GET"
+        path: "/api/v2/pokemon"
+        params:
+          offset: "0"
+          limit: "100"
+      pokemon_abilities:
+        method: "GET"
+        path: "/api/v2/pokemon/{id}/"
+        params: ~
+        dependencies:
+          pokemon: 
+            id: id
+  
+  
+  
+  # sqlserver:
+  #   type: database
+  #   host: "Testurl_host"
+
+  # endpoints:
+  #   - name: "pokemon"
+  #     path:
+  #     params:
+  #     method: "GET"
+      
+  #   - name: ""
+
