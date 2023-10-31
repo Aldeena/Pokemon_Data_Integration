@@ -8,7 +8,7 @@ class Handler():
         self.helper = Helpers()
 
     def run(self) -> None:
-        config_file = self.helper._get_config()
+        config_file = self.helper.get_config()
 
         service = Service(config_file)
 
