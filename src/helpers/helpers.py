@@ -1,6 +1,6 @@
 import yaml
 
-class Helpers:
+class Helpers():
 
     def __init__(self) -> None:
         pass
@@ -17,6 +17,9 @@ class Helpers:
     def get_endpoint(self, service_config: dict, source_name: str, endpoint_name: str) -> dict:
         return service_config.get("sources",{}).get(source_name, {}).get("endpoints",{}).get(endpoint_name)
     
+    def get_introspection_dict(self, parser_config: dict, parser_name: str) -> dict:
+        return parser_config.get("parser",{}).get(parser_name)
+    
     def get_introspection(self, json: dict or list, introspection: dict ) -> any:
         if not json:
             return None
@@ -27,3 +30,15 @@ class Helpers:
             
         else:
             return json[introspection["value"]]
+        
+    def get_page(self, parser_config: dict, parser_name: str, pagination: str ,page: int or str) -> any:
+        pagination_method = parser_config.get("parser", {}).get(parser_name, {}).get(pagination,{})
+
+        if pagination_method["type"] == "offset":
+            if page is None:
+                page = 0
+            page += pagination_method["offset_size"]
+
+            return page
+        
+        return None
