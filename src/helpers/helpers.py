@@ -1,44 +1,80 @@
 import yaml
 
-class Helpers():
 
+class Helpers:
     def __init__(self) -> None:
         pass
 
     def get_config(self) -> dict:
         with open("src/helpers/config.yml", "r") as file:
             config_file = file.read()
-        config_dict = yaml.safe_load(config_file)
-        return config_dict
+        self.config_dict = yaml.safe_load(config_file)
+        return self.config_dict
 
     def get_source(self, service_config: dict, source_name: str) -> dict:
         return service_config.get("sources", {}).get(source_name)
-    
-    def get_endpoint(self, service_config: dict, source_name: str, endpoint_name: str) -> dict:
-        return service_config.get("sources",{}).get(source_name, {}).get("endpoints",{}).get(endpoint_name)
-    
-    def get_introspection_dict(self, parser_config: dict, parser_name: str) -> dict:
-        return parser_config.get("parser",{}).get(parser_name)
-    
-    def get_introspection(self, json: dict or list, introspection: dict ) -> any:
+
+    def get_source_endpoint(
+        self, service_config: dict, source_name: str, endpoint_name: str
+    ) -> dict:
+        return (
+            service_config.get("sources", {})
+            .get(source_name, {})
+            .get("endpoints", {})
+            .get(endpoint_name)
+        )
+
+    def get_parser(self, parser_config: dict, parser_name: str) -> dict:
+        return parser_config.get("parser", {}).get(parser_name, {})
+
+    def get_parser_endpoint(
+        self, parser_config: dict, parser_name: str, endpoint_name: str
+    ) -> dict:
+        return (
+            parser_config.get("parser", {})
+            .get(parser_name, {})
+            .get("endpoints", {})
+            .get(endpoint_name)
+        )
+
+    def get_introspection(self, json: dict or list, introspection: dict) -> any:
         if not json:
             return None
-        
+
         if introspection.get("introspection"):
-            return self.get_introspection(json = json[introspection["value"]],
-                                     introspection = introspection["introspection"],)
-            
+            return self.get_introspection(
+                json=json[introspection["value"]],
+                introspection=introspection["introspection"],
+            )
+
         else:
             return json[introspection["value"]]
-        
-    def get_page(self, parser_config: dict, parser_name: str, pagination: str ,page: int or str) -> any:
-        pagination_method = parser_config.get("parser", {}).get(parser_name, {}).get(pagination,{})
 
-        if pagination_method["type"] == "offset":
-            if page is None:
-                page = 0
-            page += pagination_method["offset_size"]
-
-            return page
+    def is_paginated(
+        self, parser_name: str, endpoint_name: str
+    ) -> bool:
         
-        return None
+        print(self.config_dict.get("parser", {})
+            .get(parser_name, {})
+            .get("endpoints", {})
+            .get(endpoint_name, {})
+            .get("pagination",{})
+            .get("enabled"))
+
+        return (
+            self.config_dict.get("parser", {})
+            .get(parser_name, {})
+            .get("endpoints", {})
+            .get(endpoint_name, {})
+            .get("pagination",{})
+            .get("enabled")
+        )
+
+    def get_dependencies(self, source_name) -> any:
+        endpoint_list = self.config_dict["sources"].get(source_name, {}).get("endpoints")
+        dependencies_dict = {}
+
+        for key, value in endpoint_list.items():
+            dependencies_dict[key] = value.get("dependencies", {})
+
+        return dependencies_dict

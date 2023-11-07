@@ -7,24 +7,26 @@ sources:
         method: "GET"
         path: "/api/v2/pokemon"
         params:
-          offset: "{page}"
+          offset: "0"
           limit: "100"
       pokemon_abilities:
         method: "GET"
         path: "/api/v2/pokemon/{id}/"
         params: ~
         dependencies:
-          pokemon: 
-            id: id
+          pokemon: id
 
 parser:
   pokeapi:
     type: api
-    introspection:
-          value: "results"
-    pagination: 
-      type: offset
-      offset_size: 100
+    endpoints:
+      pokemon:
+        introspection:
+              value: "results"
+        pagination:
+          enabled: true 
+          type: offset
+          offset_size: 100
   
   
   
