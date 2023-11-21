@@ -10,6 +10,7 @@ class Handler:
     def __init__(self) -> None:
         print("Process started!\n")
         self._helper = Helpers()
+        self._helper.del_last_execution_traces()
         config_file = self._helper.get_config()
 
         self._service = Service(config_file)
@@ -17,9 +18,10 @@ class Handler:
         self._loader = Loader()
 
     def run(self) -> None:
-        dependencies_dict = self._helper.get_dependencies(source_name="pokeapi")
+        dependencies_list = self._helper.get_dependencies(source_name="pokeapi")
+        self.dependency_attribute = []
 
-        print(dependencies_dict)
+        print(dependencies_list)
 
         request_count = 0
 
@@ -38,13 +40,8 @@ class Handler:
                 request_count = 0
                 break
 
-            print(parsed_response)
-        # print(config_file)
+            for dictionary in dependencies_list:
+                if "pokemon" in dictionary:
+                    self._helper.save_dependency(endpoint="pokemon", dependency_list=parsed_response[dictionary["pokemon"]].tolist())
 
-        # poke_source = self.helper._get_source(config_file, "pokeapi")
 
-        # print(poke_source)
-
-        # pokemon_endpoint = self.helper._get_endpoint(config_file, "pokeapi", "pokemon")
-
-        # print(pokemon_endpoint)

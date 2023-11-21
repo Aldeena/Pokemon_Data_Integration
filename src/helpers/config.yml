@@ -14,7 +14,7 @@ sources:
         path: "/api/v2/pokemon/{id}/"
         params: ~
         dependencies:
-          pokemon: id
+          pokemon: name
 
 parser:
   pokeapi:

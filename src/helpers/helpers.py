@@ -1,4 +1,6 @@
 import yaml
+import os
+import json
 
 
 class Helpers:
@@ -72,9 +74,30 @@ class Helpers:
 
     def get_dependencies(self, source_name) -> any:
         endpoint_list = self.config_dict["sources"].get(source_name, {}).get("endpoints")
-        dependencies_dict = {}
+        dependencies_dict = []
 
         for key, value in endpoint_list.items():
-            dependencies_dict[key] = value.get("dependencies", {})
+            if value.get("dependencies", {}) != {}:
+                dependencies_dict.append(value.get("dependencies", {}))
 
         return dependencies_dict
+
+    def save_dependency(self, endpoint:str, dependency_list:list) -> None:
+        if os.path.exists("src/helpers/dependencies.json"):
+            with open("src/helpers/dependencies.json", "r") as file:
+                dependencies = json.load(file)
+
+            if endpoint in dependencies:
+                dependencies[endpoint].extend(dependency_list)
+            else:
+                dependencies[endpoint] = dependency_list
+        
+        else:
+            dependencies = {endpoint: dependency_list}
+
+        with open("src/helpers/dependencies.json", "w") as file:
+            json.dump(dependencies, file, indent=2)
+
+    def del_last_execution_traces(self) -> None:
+        if os.path.exists("src/helpers/dependencies.json"):
+            os.remove("src/helpers/dependencies.json")
